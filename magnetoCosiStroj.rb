@@ -1,5 +1,3 @@
-
-
 def setup
   size 640,480,P2D
 
@@ -11,22 +9,14 @@ def setup
 
   @@id = 0
   @inputs = Array.new(4,Input.new(false))
-
-
 end
 
-
-
 def draw
-
   background 255
-
   @imputs.each do |input|
     input.draw
   end
-
 end
-
 
 class Input
   @state
