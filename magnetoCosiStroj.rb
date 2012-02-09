@@ -1,47 +1,74 @@
 def setup
-  size 640,480,P2D
+  size 640,280,P2D
 
   rectMode CENTER
-  
-  @xs = [10,20,30,40,50]
-  @ys = [20,20,20,20,20]
+
+  @xs = [80,160,240,320,400]
+  @ys = [200,200,200,200,200]
 
 
   @@id = 0
-  @inputs = Array.new(4,Input.new(false))
+  @alins = []
+
+
+  4.times do |num|
+    @alins << Input.new(num,@xs[num],@ys[num])
+
+  end
+
+
+
 end
 
 def draw
   background 255
-  @imputs.each do |input|
+
+  @alins.each do |input|
     input.draw
   end
 end
 
 class Input
-  @state
-  @id
-  @x
-  @y
+  def initialize _id,xs,ys
 
-  #attr_accessor @state,@id
+    @c1 = color(255,0,0)
 
-  def initialize _state
+    @c2 = color(255)
 
-    @state = _state
-    
-    @id = @@id
-    @@id += 1
-    
-    @x = @xs[@id]
-    @y = @ys[@id]
+    @state = false
+
+    @ID = _id
+
+    @x = xs
+    @y = ys
 
   end
 
+
+  def check
+    if(over)
+      @state = !@state
+    end
+  end
+
   def draw
-    fill 0xffff0000
+    fill(@state ? @c1 : @c2)
     rect @x,@y,10,20
 
+    if(mousePressed)
+      check
+    end
+
+  end
+
+  def over
+    odpoved = false
+
+    if(mouseX > @x - 5 && mouseX < @x + 5 && mouseY > @y - 10 && mouseY< @y + 10)
+      odpoved = true
+    end
+
+    return odpoved
   end
 
 end
