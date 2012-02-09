@@ -15,38 +15,34 @@ void setup(){
 
 
   smooth();
- inputs = new ArrayList();
+  inputs = new ArrayList();
 
   konektory = new ArrayList();
   zarovky = new ArrayList();
 
- for(int i =0 ; i < numInputs;i++){
+  for(int i =0 ; i < numInputs;i++){
     inputs.add(new Input(i,x[i],y[i],false));
- }
+  }
 
 
- float X = 400;
- float Y = 20;
- for(int i =0 ; i < numKonektors;i++){
+  float X = 400;
+  float Y = 20;
+  for(int i =0 ; i < numKonektors;i++){
     konektory.add(new Konektor(i,X,Y,false));
     X+= 40;
     if((i+1)%4==0){
-     X=400;
+      X=400;
       Y+=40;
     }
- }
+  }
 
+  X = 80;
+  Y = 20;
 
- X = 80;
- Y = 20;
-
- for(int i =0 ; i < numZarovek;i++){
+  for(int i =0 ; i < numZarovek;i++){
     zarovky.add(new Zarovka(i,X,Y,false));
     X+= 40;
- }
-
-
-
+  }
 }
 
 void draw(){
@@ -58,20 +54,18 @@ void draw(){
     in.draw();
   }
 
- for(int i =0 ; i < konektory.size();i++){
-  Input in =  (Input)konektory.get(i);
-  in.draw();
- }
+  for(int i =0 ; i < konektory.size();i++){
+    Input in =  (Input)konektory.get(i);
+    in.draw();
+  }
 
- for(int i =0 ; i < zarovky.size();i++){
-  Zarovka in =  (Zarovka)zarovky.get(i);
-  in.draw();
- }
+  for(int i =0 ; i < zarovky.size();i++){
+    Zarovka in =  (Zarovka)zarovky.get(i);
+    in.draw();
+  }
 
-
- Zarovka z = (Zarovka)zarovky.get(0);
- z.blik();
- 
+  Zarovka z = (Zarovka)zarovky.get(0);
+  z.blik();
 }
 
 
@@ -117,7 +111,7 @@ class Input{
 }
 
 class Konektor extends Input{
- 
+
   Konektor(int _id,float _x,float _y,boolean _state){
     super(_id,_x,_y,_state);
   }
@@ -138,13 +132,13 @@ class Konektor extends Input{
 
 
 class Zarovka extends Input{
- float dim = 0;
-boolean dimming = false;
+  float dim = 0;
+  boolean dimming = false;
 
   Zarovka(int _id,float _x,float _y,boolean _state){
-   super(_id,_x,_y,_state);
+    super(_id,_x,_y,_state);
 
-   c1 = color(#ffcc00);
+    c1 = color(#ffcc00);
   }
 
   void draw(){
@@ -169,8 +163,6 @@ boolean dimming = false;
 
 
 void mousePressed(){
-
-
   for(int i = 0 ; i < inputs.size(); i++){
     Input in = (Input)inputs.get(i);
     if(in.over()){
@@ -178,15 +170,11 @@ void mousePressed(){
     }
   }
 
-
   for(int i = 0 ; i < konektory.size(); i++){
     Konektor in = (Konektor)konektory.get(i);
     if(in.over()){
       in.state = !in.state;
     }
   }
-
-
   mousePressed = false;
-
 }
