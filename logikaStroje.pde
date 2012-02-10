@@ -175,3 +175,30 @@ void keyPressed(){
   z.blik();
 
 }
+
+
+class Hadnaka{
+  int mode = 0;
+  int [] combo = [1,3,4,2];
+
+  int state;
+
+  Hadanka(){
+    
+
+  }
+
+  void sucess(){
+    for(int i = 0 ; i < zarovky.size();i++){
+      Zarovka z = (Zarovka)zarovky.get(i);
+      z.blink();
+    }
+
+  }
+
+  void no(){
+
+
+  }
+
+}
