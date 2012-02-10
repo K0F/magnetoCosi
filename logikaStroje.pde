@@ -24,6 +24,12 @@
 */
 
 
+import processing.serial.*;
+
+import cc.arduino.*;
+
+Arduino arduino;
+
 ArrayList inputs;
 ArrayList konektory;
 ArrayList zarovky;
@@ -35,8 +41,15 @@ int numZarovek = 4;
 int x[] = {80,160,240,320};
 int y[] = {200,200,200,200};
 
+int [] zarovkaPwm = {10,9,11,12};
+float power = 127;
+
 void setup(){
   size(640,280);
+  
+  println(Arduino.list());
+  arduino = new Arduino(this, Arduino.list()[0], 57600);
+  
   smooth();
   inputs = new ArrayList();
 
@@ -70,7 +83,17 @@ void setup(){
 void draw(){
 
   background(255);
+  
+ // if(frameCount%10==0)
+  
+  drawAll();
+  sendZarovky();
+ 
+}
 
+
+void drawAll(){
+  
   for(int i = 0 ; i < inputs.size(); i++){
     Input in = (Input)inputs.get(i);
     in.draw();
@@ -84,7 +107,21 @@ void draw(){
   for(int i =0 ; i < zarovky.size();i++){
     Zarovka in =  (Zarovka)zarovky.get(i);
     in.draw();
+  } 
+}
+
+/////////////////////////////////////////
+void sendZarovky(){
+  for(int i =0 ; i < zarovky.size();i++){
+    Zarovka in =  (Zarovka)zarovky.get(i);
+    arduino.analogWrite(zarovkaPwm[i],(int)map(in.dim,0,255,0,power));
   }
+  
+  if(frameCount%50==0){
+  Zarovka z = (Zarovka)zarovky.get((int)random(0,4));
+  z.blik();
+  }
+  
 }
 
 
@@ -156,24 +193,33 @@ class Zarovka extends Input{
 
   void draw(){
 
+
+    
     if(dimming && dim < 255){
-      dim+=32;
+      dim+=22;
+      
     }else if(dim >= 255 && dimming){
      dimming = false; 
     }else if(dim > 0){
-      dim-=32;
+      dim-=22;
     }else{
       dimming = false;
     }
 
     fill(state?c1:c2,dim); 
-
+   
     ellipse(x,y,w,w);
+  }
+  
+  void setDim(float _dim){
+    dim = dim;
   }
 
   void blik(){
     dimming = true;
   }
+  
+  
 } 
 
 
@@ -197,15 +243,13 @@ void mousePressed(){
 
 void keyPressed(){
 
-  Zarovka z = (Zarovka)zarovky.get((int)random(0,4));
-  z.blik();
 
 }
 
-
+/*
 class Hadnaka{
   int mode = 0;
-  int [] combo = [1,3,4,2];
+ // int [] combo = [1,3,4,2];
 
   int state;
 
@@ -227,4 +271,4 @@ class Hadnaka{
 
   }
 
-}
+}*/
