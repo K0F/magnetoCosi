@@ -1,11 +1,11 @@
 # Stroj / hadanka
 
-  ## Autori
+## Autori
 
-    - Michal Cab
-    - Krystof Pesek
+- Michal Cab
+- Krystof Pesek
 
-  ## Jazyk
+## Jazyk
 
-    - ruby (ruby-processing)
-    - java ([Processing](http://www.processing.org))
+- ruby (ruby-processing)
+- java ([Processing](http://www.processing.org))
