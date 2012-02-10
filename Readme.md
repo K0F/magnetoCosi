@@ -14,8 +14,7 @@ Logická hádnaka vintage-bastl stroje.
 
 
 ## Kompilace
-
-  $cd [dir]
-  $pp
+ $ cd [dir]
+ $ pp
 
 
