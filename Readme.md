@@ -1,5 +1,7 @@
 # Stroj / hadanka
 
+Logicka hadnaka vintage bastl stroje.
+
 ## Autori
 
 - Michal Cab
