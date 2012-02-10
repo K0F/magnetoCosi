@@ -10,10 +10,7 @@ int x[] = {80,160,240,320};
 int y[] = {200,200,200,200};
 
 void setup(){
-
   size(640,280);
-
-
   smooth();
   inputs = new ArrayList();
 
@@ -23,7 +20,6 @@ void setup(){
   for(int i =0 ; i < numInputs;i++){
     inputs.add(new Input(i,x[i],y[i],false));
   }
-
 
   float X = 400;
   float Y = 20;
@@ -63,9 +59,6 @@ void draw(){
     Zarovka in =  (Zarovka)zarovky.get(i);
     in.draw();
   }
-
-  Zarovka z = (Zarovka)zarovky.get(0);
-  z.blik();
 }
 
 
@@ -88,16 +81,9 @@ class Input{
     h = 30;
   }
 
-
-
   void draw(){
-
-
     fill(state?c1:c2); 
-
     rect(x,y,w,h);
-
-
   }
 
   boolean over(){
@@ -106,7 +92,6 @@ class Input{
     if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h)
       answ = true;
     return answ;
-
   }
 }
 
@@ -135,18 +120,22 @@ class Zarovka extends Input{
   float dim = 0;
   boolean dimming = false;
 
+  boolean state = true;
   Zarovka(int _id,float _x,float _y,boolean _state){
     super(_id,_x,_y,_state);
 
     c1 = color(#ffcc00);
+    c2 = color(#ccff00); 
   }
 
   void draw(){
 
     if(dimming && dim < 255){
-      dim+=2;
+      dim+=32;
+    }else if(dim >= 255 && dimming){
+     dimming = false; 
     }else if(dim > 0){
-      dim-=2;
+      dim-=32;
     }else{
       dimming = false;
     }
@@ -177,4 +166,12 @@ void mousePressed(){
     }
   }
   mousePressed = false;
+}
+
+
+void keyPressed(){
+
+  Zarovka z = (Zarovka)zarovky.get((int)random(0,4));
+  z.blik();
+
 }
