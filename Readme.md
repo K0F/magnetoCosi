@@ -17,3 +17,5 @@ Logická hádnaka vintage-bastl stroje.
 
   $ cd [dir]
   $ pp
+
+
