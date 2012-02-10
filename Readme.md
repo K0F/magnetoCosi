@@ -1,13 +1,19 @@
-# Stroj / hadanka
+# Stroj / hádanka
 
-Logicka hadnaka vintage bastl stroje.
+Logická hádnaka vintage-bastl stroje.
 
-## Autori
+## Autoři
 
-- Michal Cab
-- Krystof Pesek
+- Michal Cáb
+- Kryštof Pešek
 
 ## Jazyk
 
-- ruby (ruby-processing)
+- ruby ([ruby-processing](https://github.com/jashkenas/ruby-processing/wiki))
 - java ([Processing](http://www.processing.org))
+
+
+## Kompilace
+
+$ cd [dir]
+$ pp
