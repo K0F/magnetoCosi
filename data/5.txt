@@ -1,0 +1,3 @@
+Systém zapojen. Zjištuji stav zapojení modulů…. frrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr… zapojeno 5 modulů z 5. Systém plně zapojen.
+
+Lokalizujte M-Grafon dle signalizačního zařízení a zadejte přístupový kód.

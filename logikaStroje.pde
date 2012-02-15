@@ -30,6 +30,8 @@ import cc.arduino.*;
 
 Arduino arduino;
 
+Hlas hlas;
+
 ArrayList inputs;
 ArrayList konektory;
 ArrayList zarovky;
@@ -41,7 +43,9 @@ int numZarovek = 4;
 int x[] = {80,160,240,320};
 int y[] = {200,200,200,200};
 
-int [] zarovkaPwm = {10,9,11,12};
+int [] zarovkaPwm = {8,9,10,11};
+int [] spinacPin = {0,1,2,3};
+int [] matrixPin = {4,5,6,7,8,9,10,11};
 float power = 127;
 
 void setup(){
@@ -50,7 +54,12 @@ void setup(){
   println(Arduino.list());
   arduino = new Arduino(this, Arduino.list()[0], 57600);
   
-  smooth();
+  for (int i = 0; i < spinacPin.length; i++)
+    arduino.pinMode(spinacPin[i], Arduino.INPUT);
+    
+    
+  
+  //smooth();
   inputs = new ArrayList();
 
   konektory = new ArrayList();
@@ -59,6 +68,8 @@ void setup(){
   for(int i =0 ; i < numInputs;i++){
     inputs.add(new Input(i,x[i],y[i],false));
   }
+  
+  hlas = new Hlas();
 
   float X = 400;
   float Y = 20;
@@ -84,26 +95,20 @@ void draw(){
 
   background(255);
   
- // if(frameCount%10==0)
-  
   drawAll();
   sendZarovky();
- 
 }
 
 
 void drawAll(){
-  
   for(int i = 0 ; i < inputs.size(); i++){
     Input in = (Input)inputs.get(i);
     in.draw();
   }
-
   for(int i =0 ; i < konektory.size();i++){
     Input in =  (Input)konektory.get(i);
     in.draw();
   }
-
   for(int i =0 ; i < zarovky.size();i++){
     Zarovka in =  (Zarovka)zarovky.get(i);
     in.draw();
@@ -115,13 +120,19 @@ void sendZarovky(){
   for(int i =0 ; i < zarovky.size();i++){
     Zarovka in =  (Zarovka)zarovky.get(i);
     arduino.analogWrite(zarovkaPwm[i],(int)map(in.dim,0,255,0,power));
+    in.dim = (sin((frameCount+i*15.0)/15.0)+1.0)*255;
   }
   
-  if(frameCount%50==0){
-  Zarovka z = (Zarovka)zarovky.get((int)random(0,4));
-  z.blik();
-  }
   
+}
+int c = 0;
+
+void dispose(){
+  for(int i =0 ; i < zarovky.size();i++){
+    Zarovka in =  (Zarovka)zarovky.get(i);
+    arduino.analogWrite(zarovkaPwm[i],0);
+  }
+  super.dispose(); 
 }
 
 
@@ -145,8 +156,21 @@ class Input{
   }
 
   void draw(){
-    fill(state?c1:c2); 
-    rect(x,y,w,h);
+    fill(state ? c1 : c2); 
+    rect( x , y , w , h );
+    checkState();
+    //println(state);
+  }
+  
+  void checkState(){
+    int val = arduino.analogRead(spinacPin[id]);
+    println(id+": "+val);
+    if(val > 1000){
+      
+     state=true; 
+    }else{
+     state=false; 
+    }
   }
 
   boolean over(){
@@ -176,6 +200,7 @@ class Konektor extends Input{
     return answ;
 
   }
+  
 }
 
 
@@ -192,22 +217,7 @@ class Zarovka extends Input{
   }
 
   void draw(){
-
-
-    
-    if(dimming && dim < 255){
-      dim+=22;
-      
-    }else if(dim >= 255 && dimming){
-     dimming = false; 
-    }else if(dim > 0){
-      dim-=22;
-    }else{
-      dimming = false;
-    }
-
     fill(state?c1:c2,dim); 
-   
     ellipse(x,y,w,w);
   }
   
@@ -243,7 +253,7 @@ void mousePressed(){
 
 void keyPressed(){
 
-
+hlas.mluv("fin.txt");
 }
 
 /*

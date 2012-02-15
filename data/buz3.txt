@@ -1,0 +1,1 @@
+Systém zaznamenal příliš pomalé připojování modulů. Přepínám do krizového režimu. 

@@ -1,0 +1,3 @@
+Chyba systému. Neúspěšný pokus o prolomení zabezpečení. IQ uživatele identifikováno v negativní korelaci k rychlosti stisků ovládacího panelu.  Vyčkejte 60s do obnovení funkčnosti systému. 
+
+Chyba systému. Neúspěšný pokus o prolomení zabezpečení. Uživatel diagnostikován jako hyperaktivní a nezpůsobilý.  Vyčkejte 60s do obnovení funkčnosti systému.

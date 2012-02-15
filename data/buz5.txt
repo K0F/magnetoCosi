@@ -1,0 +1,1 @@
+Příliš pomalé připojování modulů, příprava na zablokování přístroje spuštěna. 

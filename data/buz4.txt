@@ -1,0 +1,1 @@
+Příliš pomalé připojování modulů, systém provede nevratné změny. Odpočet započat. 
