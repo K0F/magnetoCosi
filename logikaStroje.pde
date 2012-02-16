@@ -1,82 +1,138 @@
 /**
-*  Code by Krystof Pesek, licensed under Creative Commons Attribution-Share Alike 3.0 license.
-*  License: http://creativecommons.org/licenses/by-sa/3.0/
-*
-* visit more @ http://vimeo.com/kof
-* if you leave this header, bend, share, spread the code, it is a freedom!
-*
-*   ,dPYb,                  ,dPYb,
-*   IP'`Yb                  IP'`Yb
-*   I8  8I                  I8  8I
-*   I8  8bgg,               I8  8'
-*   I8 dP" "8    ,ggggg,    I8 dP
-*   I8d8bggP"   dP"  "Y8ggg I8dP
-*   I8P' "Yb,  i8'    ,8I   I8P
-*  ,d8    `Yb,,d8,   ,d8'  ,d8b,_
-*  88P      Y8P"Y8888P"    PI8"8888
-*                           I8 `8,
-*                           I8  `8,
-*                           I8   8I
-*                           I8   8I
-*                           I8, ,8'
-*                            "Y8P'
-*
-*/
+ *  Code by Krystof Pesek, licensed under Creative Commons Attribution-Share Alike 3.0 license.
+ *  License: http://creativecommons.org/licenses/by-sa/3.0/
+ *
+ * visit more @ http://vimeo.com/kof
+ * if you leave this header, bend, share, spread the code, it is a freedom!
+ *
+ *   ,dPYb,                  ,dPYb,
+ *   IP'`Yb                  IP'`Yb
+ *   I8  8I                  I8  8I
+ *   I8  8bgg,               I8  8'
+ *   I8 dP" "8    ,ggggg,    I8 dP
+ *   I8d8bggP"   dP"  "Y8ggg I8dP
+ *   I8P' "Yb,  i8'    ,8I   I8P
+ *  ,d8    `Yb,,d8,   ,d8'  ,d8b,_
+ *  88P      Y8P"Y8888P"    PI8"8888
+ *                           I8 `8,
+ *                           I8  `8,
+ *                           I8   8I
+ *                           I8   8I
+ *                           I8, ,8'
+ *                            "Y8P'
+ *
+ */
 
 
 import processing.serial.*;
 
 import cc.arduino.*;
 
+
+
+/// debugging
+////////////////////////
+float power = 255;
+int mode = 0;
+//////////////////////
+
+
 Arduino arduino;
 
 Hlas hlas;
+
+Morse morse;
 
 ArrayList inputs;
 ArrayList konektory;
 ArrayList zarovky;
 
 int numInputs = 4;
-int numKonektors = 16;
+int numKonektors = 2;
 int numZarovek = 4;
 
-int x[] = {80,160,240,320};
-int y[] = {200,200,200,200};
+boolean states[] = {false,false};
+boolean pstates[] = {false,false};
 
-int [] zarovkaPwm = {8,9,10,11};
-int [] spinacPin = {0,1,2,3};
-int [] matrixPin = {4,5,6,7,8,9,10,11};
-float power = 127;
+int x[] = {
+  80, 160, 240, 320
+};
+int y[] = {
+  200, 200, 200, 200
+};
 
-void setup(){
-  size(640,280);
-  
+int [] zarovkaPwm = {
+  11, 9, 10, 8
+};
+int [] spinacPin = {
+  0, 1, 2, 3
+};
+int [] matrixPin = {
+  4,5
+};
+
+int [] chapter0 = {
+  255, 255, 255, 255
+};
+
+int [] chapter1 = {
+  0, 0, 0, 0
+};
+int [] chapter2 = {
+  255, 0, 0, 0
+};
+int [] chapter3 = {
+  0, 255, 0, 0
+};
+int [] chapter4 = {
+  0, 0, 255, 0
+};
+int [] chapter5 = {
+  0, 0, 0, 255
+};
+int [] chapter6 = {
+  255, 255, 255, 255
+};
+
+
+void setup() {
+  size(640, 400, P2D);
+
+  frameRate(25);
+
+
+
   println(Arduino.list());
-  arduino = new Arduino(this, Arduino.list()[0], 57600);
-  
+  arduino = new Arduino(this, Arduino.list()[0]);
+
   for (int i = 0; i < spinacPin.length; i++)
-    arduino.pinMode(spinacPin[i], Arduino.INPUT);
+    arduino.pinMode(spinacPin[i], Arduino.ANALOG);
     
-    
+    for (int i = 0; i < matrixPin.length; i++)
+    arduino.pinMode(matrixPin[i], Arduino.ANALOG);
+
+
   
+
+
   //smooth();
   inputs = new ArrayList();
-
   konektory = new ArrayList();
   zarovky = new ArrayList();
 
-  for(int i =0 ; i < numInputs;i++){
-    inputs.add(new Input(i,x[i],y[i],false));
+
+  for (int i =0 ; i < numInputs;i++) {
+    inputs.add(new Input(i, x[i], y[i], false));
   }
-  
+
   hlas = new Hlas();
 
   float X = 400;
   float Y = 20;
-  for(int i =0 ; i < numKonektors;i++){
-    konektory.add(new Konektor(i,X,Y,false));
+  for (int i =0 ; i < numKonektors;i++) {
+    konektory.add(new Konektor(i, X, Y, false));
     X+= 40;
-    if((i+1)%4==0){
+    if ((i+1)%4==0) {
       X=400;
       Y+=40;
     }
@@ -85,200 +141,289 @@ void setup(){
   X = 80;
   Y = 20;
 
-  for(int i =0 ; i < numZarovek;i++){
-    zarovky.add(new Zarovka(i,X,Y,false));
+  for (int i =0 ; i < numZarovek;i++) {
+    zarovky.add(new Zarovka(i, X, Y, false));
     X+= 40;
+  }
+  
+  morse = new Morse();
+  
+}
+
+void keyPressed(){
+ 
+}
+
+void readKonektors() {
+
+  for (int i =0 ; i < konektory.size();i++) {
+    Konektor k = (Konektor)konektory.get(i);
+    k.update();
+    //print(k.state+" ")
+    
+  } 
+  //println("");
+}
+
+int timer = 0;
+
+void draw() {
+  
+  ///buzerace
+  
+  
+  
+  if(frameCount%2000==0 && timer > 500 && mode > 0){
+    hlas.mluv("buz"+(int)random(1,6)+".txt");
+    timer = 0;
+  }
+
+  background(255);
+
+
+  if (frameCount%3==0) 
+    readKonektors();
+
+  drawAll();
+
+  Input enter = (Input)inputs.get(0);
+  Konektor valid1 = (Konektor)konektory.get(0);
+Konektor valid2 = (Konektor)konektory.get(1);
+
+
+  states[0] = valid1.state;
+  states[1] = valid2.state;
+
+  timer ++;
+
+  switch(mode) {
+    //////////////////////////////////////////
+  case 0:
+
+
+
+    //waveZarovky();
+    timer ++;
+    if (enter.state && timer > 50) {
+    
+      pstates[0] = states[0] = false;
+      pstates[1] = states[1] = false;
+      
+      timer = 0;
+      //blikAll();
+      hlas.mluv("0.txt");
+      
+      for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter0[i];
+      in.update();
+    }
+      
+      
+      delay(15000);
+      mode = 1;
+      println(mode);
+    }
+    break; 
+  case 1:
+
+    //////////////////////////////////////////
+    timer++;
+    if (enter.state && timer>50 && !states[0] && states[1] ) {
+      timer = 0;
+      pstates[0] = states[0];
+      pstates[1] = states[1];
+      
+
+      hlas.mluv("1.txt");
+      delay(15000);
+      mode = 2; 
+      
+      println(mode);
+    }else if(enter.state && timer>50){
+      timer=-1000;
+      hlas.mluv("errUsr.txt");
+      delay(15000);
+      
+    }
+
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter1[i];
+      
+    }
+
+    break; 
+  case 2:
+
+    //////////////////////////////////////////
+    timer++;
+    if (enter.state && timer>50 && states[0] && !states[1] && !pstates[0] && pstates[1]) {
+      timer = 0; 
+      
+      
+      pstates[0] = states[0];
+      pstates[1] = states[1];
+      
+      hlas.mluv("2.txt");
+      delay(15000);
+
+      mode = 3; 
+      println(mode);
+    }else if(enter.state && timer>50){
+      timer=-1000;
+      hlas.mluv("errUsr.txt");
+      delay(15000);
+    }
+
+
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter2[i];
+    }
+
+    break; 
+  case 3:
+
+    timer++;
+    if (enter.state && timer>50 && states[0] && !states[1] && pstates[0] && !pstates[1]) {
+      timer=0; 
+      
+      
+      pstates[0] = states[0];
+      pstates[1] = states[1];
+      
+      hlas.mluv("3.txt");
+      delay(15000);
+
+      mode = 4; 
+      println(mode);
+    }else if(enter.state && timer>50){
+      timer=-1000;
+      hlas.mluv("errUsr.txt");
+      delay(15000);
+    }
+
+
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter3[i];
+    }
+
+    //////////////////////////////////////////
+
+
+    break; 
+  case 4:
+    timer++;
+    if (enter.state && timer>50 && !states[0] && states[1] && pstates[0] && !pstates[1]) {
+      timer=0; 
+      hlas.mluv("4.txt");
+      delay(15000);
+
+      mode = 5; 
+      println(mode);
+    }else if(enter.state && timer>50){
+      timer=-1000;
+      hlas.mluv("errUsr.txt");
+      delay(15000);
+    }
+
+
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter4[i];
+    }
+
+    //////////////////////////////////////////
+
+    break; 
+  case 5:
+  
+  for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter5[i];
+    }
+    
+    
+    boolean trues[] = new boolean[3];
+  for (int i = 0 ; i < 3 ;i++) {
+    Input input = (Input)inputs.get(i+1);
+    trues[i] = input.state;
+  
+  }  
+    
+    if(enter.state && timer>50 && trues[1] && trues[1] && trues[0]){
+      hlas.mluv("5.txt");
+      timer = 0;
+      
+      delay(15000);
+      mode = 6;
+    }
+
+    //////////////////////////////////////////
+
+    break;
+    
+    case 6:
+    
+    
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter6[i];
+    }
+    
+    if(enter.state && timer>50){
+      timer = -5000;
+      morse.zprava();
+      morse.zprava();
+      morse.zprava();
+      morse.zprava();
+      
+      delay(5000);
+      
+      hlas.mluv("fin.txt");
+      
+    }
+      
+    break;
+    
+
+  default:
   }
 }
 
-void draw(){
 
-  background(255);
-  
-  drawAll();
-  sendZarovky();
-}
-
-
-void drawAll(){
-  for(int i = 0 ; i < inputs.size(); i++){
+void drawAll() {
+  for (int i = 0 ; i < inputs.size(); i++) {
     Input in = (Input)inputs.get(i);
     in.draw();
   }
-  for(int i =0 ; i < konektory.size();i++){
+  for (int i =0 ; i < konektory.size();i++) {
     Input in =  (Input)konektory.get(i);
     in.draw();
   }
-  for(int i =0 ; i < zarovky.size();i++){
+  for (int i =0 ; i < zarovky.size();i++) {
     Zarovka in =  (Zarovka)zarovky.get(i);
     in.draw();
-  } 
+  }
 }
 
 /////////////////////////////////////////
-void sendZarovky(){
-  for(int i =0 ; i < zarovky.size();i++){
-    Zarovka in =  (Zarovka)zarovky.get(i);
-    arduino.analogWrite(zarovkaPwm[i],(int)map(in.dim,0,255,0,power));
-    in.dim = (sin((frameCount+i*15.0)/15.0)+1.0)*255;
-  }
-  
-  
-}
 int c = 0;
 
-void dispose(){
-  for(int i =0 ; i < zarovky.size();i++){
+
+void blikAll() {
+  for (int i =0 ; i < zarovky.size();i++) {
     Zarovka in =  (Zarovka)zarovky.get(i);
-    arduino.analogWrite(zarovkaPwm[i],0);
-  }
-  super.dispose(); 
-}
-
-
-class Input{
-  float x,y;
-  int id;
-  boolean state;
-  int w,h;
-
-  color c2 = color(255);
-  color c1 = color(255,0,0);
-
-  Input(int _id,float _x,float _y,boolean _state){
-    x = _x;
-    y = _y;
-    id = _id;
-    state =  _state;
-
-    w = 20;
-    h = 30;
-  }
-
-  void draw(){
-    fill(state ? c1 : c2); 
-    rect( x , y , w , h );
-    checkState();
-    //println(state);
-  }
-  
-  void checkState(){
-    int val = arduino.analogRead(spinacPin[id]);
-    println(id+": "+val);
-    if(val > 1000){
-      
-     state=true; 
-    }else{
-     state=false; 
-    }
-  }
-
-  boolean over(){
-    boolean answ = false;
-
-    if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h)
-      answ = true;
-    return answ;
+    in.state = true;
   }
 }
 
-class Konektor extends Input{
-
-  Konektor(int _id,float _x,float _y,boolean _state){
-    super(_id,_x,_y,_state);
+void waveZarovky(int faze) {
+  for (int i =0 ; i < zarovky.size();i++) {
+    Zarovka in =  (Zarovka)zarovky.get(i);
+    arduino.analogWrite(zarovkaPwm[i], 255);
   }
-
-  void draw(){
-    fill(state?c1:c2); 
-    ellipse(x,y,w,w);
-  }
-  boolean over(){
-    boolean answ = false;
-
-    if(mouseX > x-w && mouseX < x+w && mouseY > y-w && mouseY < y+w)
-      answ = true;
-    return answ;
-
-  }
-  
 }
 
-
-class Zarovka extends Input{
-  float dim = 0;
-  boolean dimming = false;
-
-  boolean state = true;
-  Zarovka(int _id,float _x,float _y,boolean _state){
-    super(_id,_x,_y,_state);
-
-    c1 = color(#ffcc00);
-    c2 = color(#ccff00); 
-  }
-
-  void draw(){
-    fill(state?c1:c2,dim); 
-    ellipse(x,y,w,w);
-  }
-  
-  void setDim(float _dim){
-    dim = dim;
-  }
-
-  void blik(){
-    dimming = true;
-  }
-  
-  
-} 
-
-
-void mousePressed(){
-  for(int i = 0 ; i < inputs.size(); i++){
-    Input in = (Input)inputs.get(i);
-    if(in.over()){
-      in.state = !in.state;
-    }
-  }
-
-  for(int i = 0 ; i < konektory.size(); i++){
-    Konektor in = (Konektor)konektory.get(i);
-    if(in.over()){
-      in.state = !in.state;
-    }
-  }
-  mousePressed = false;
-}
-
-
-void keyPressed(){
-
-hlas.mluv("fin.txt");
-}
-
-/*
-class Hadnaka{
-  int mode = 0;
- // int [] combo = [1,3,4,2];
-
-  int state;
-
-  Hadanka(){
-    
-
-  }
-
-  void sucess(){
-    for(int i = 0 ; i < zarovky.size();i++){
-      Zarovka z = (Zarovka)zarovky.get(i);
-      z.blink();
-    }
-
-  }
-
-  void no(){
-
-
-  }
-
-}*/
