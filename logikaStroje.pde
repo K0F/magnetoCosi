@@ -43,6 +43,8 @@ Hlas hlas;
 
 Morse morse;
 
+boolean odblokovan = false;
+
 ArrayList inputs;
 ArrayList konektory;
 ArrayList zarovky;
@@ -82,16 +84,16 @@ int [] chapter2 = {
   255, 0, 0, 0
 };
 int [] chapter3 = {
-  0, 255, 0, 0
+  255, 255, 0, 0
 };
 int [] chapter4 = {
-  0, 0, 255, 0
+  255, 255, 255, 0
 };
 int [] chapter5 = {
-  0, 0, 0, 255
+  255, 255, 255, 255
 };
 int [] chapter6 = {
-  255, 255, 255, 255
+  255, 0, 255, 0
 };
 
 
@@ -166,6 +168,7 @@ void readKonektors() {
 }
 
 int timer = 0;
+int cntr = 0;
 
 void draw() {
   
@@ -173,7 +176,7 @@ void draw() {
   
   
   
-  if(frameCount%2000==0 && timer > 500 && mode > 0){
+  if(frameCount%2000==0 && timer > 500 && mode > 0 && mode <= 5){
     hlas.mluv("buz"+(int)random(1,6)+".txt");
     timer = 0;
   }
@@ -285,6 +288,9 @@ Konektor valid2 = (Konektor)konektory.get(1);
     break; 
   case 3:
 
+
+
+
     timer++;
     if (enter.state && timer>50 && states[0] && !states[1] && pstates[0] && !pstates[1]) {
       timer=0; 
@@ -303,12 +309,15 @@ Konektor valid2 = (Konektor)konektory.get(1);
       hlas.mluv("errUsr.txt");
       delay(15000);
     }
-
-
+    
+    
     for (int i =0 ; i < zarovky.size();i++) {
       Zarovka in =  (Zarovka)zarovky.get(i);
       in.dim = chapter3[i];
     }
+
+
+    
 
     //////////////////////////////////////////
 
@@ -317,12 +326,19 @@ Konektor valid2 = (Konektor)konektory.get(1);
   case 4:
     timer++;
     if (enter.state && timer>50 && !states[0] && states[1] && pstates[0] && !pstates[1]) {
-      timer=0; 
+      
+   
+      
+      pstates[0] = states[0];
+      pstates[1] = states[1];
+      
+      timer=-1000; 
       hlas.mluv("4.txt");
       delay(15000);
 
       mode = 5; 
       println(mode);
+      
     }else if(enter.state && timer>50){
       timer=-1000;
       hlas.mluv("errUsr.txt");
@@ -353,12 +369,96 @@ Konektor valid2 = (Konektor)konektory.get(1);
   
   }  
     
-    if(enter.state && timer>50 && trues[1] && trues[1] && trues[0]){
+    if(enter.state && timer>50 && !odblokovan){
+      odblokovan = true;
       hlas.mluv("5.txt");
       timer = 0;
       
+      delay(25000);
+      
+      
+      morse.zprava();
+      
+      
+      
+      
+    }
+    
+    
+    
+    if(cntr == 0 && enter.state && odblokovan && timer>50 && !trues[2] && !trues[1] && !trues[0]){
+      timer = 0;
+      cntr = 1;
+      hlas.rekni("nula");
+    }
+    
+    
+    
+    if(cntr == 1 && enter.state && odblokovan && timer>50 && !trues[2] && !trues[1] && trues[0]){
+      timer = 0;
+      cntr = 2;
+      hlas.rekni("jedna");
+    }
+    
+    
+    
+    if(cntr == 2 && enter.state && odblokovan && timer>50 && !trues[2] && trues[1] && !trues[0]){
+      timer = 0;
+      cntr = 3;
+      hlas.rekni("dva");
+    }
+    
+    
+    
+    if(cntr == 3 && enter.state && odblokovan && timer>50 && !trues[2] && trues[1] && trues[0]){
+      timer = 0;
+      cntr = 4;
+      hlas.rekni("tři");
+    }
+    
+    
+    if(cntr == 4 && enter.state && odblokovan && timer>50 && trues[2] && !trues[1] && !trues[0]){
+      timer = 0;
+      cntr = 5;
+      hlas.rekni("čtyři");
+    }
+    
+    
+    if(cntr == 5 && enter.state && odblokovan && timer>50 && trues[2] && !trues[1] && trues[0]){
+      timer = 0;
+      cntr = 6;
+      hlas.rekni("pět");
+    }
+    
+    
+    if(cntr == 6 && enter.state && odblokovan && timer>50 && trues[2] && trues[1] && !trues[0]){
+      timer = 0;
+      cntr = 7;
+      hlas.rekni("šest");
+    }
+    
+    
+    if(cntr == 7 && enter.state && odblokovan && timer>50 && trues[2] && trues[1] && trues[0]){
+      timer = 0;
+      cntr = 7;
+      hlas.rekni("sedm");
+      
+      
+    
+      hlas.mluv("6.txt");
       delay(15000);
       mode = 6;
+    }
+    
+    
+    
+    
+      
+    if( cntr == 0 && enter.state && odblokovan && timer>50){
+      timer = 0;
+      morse.zprava();
+      delay(15000);
+      
     }
 
     //////////////////////////////////////////
@@ -367,22 +467,38 @@ Konektor valid2 = (Konektor)konektory.get(1);
     
     case 6:
     
+    for (int i =0 ; i < zarovky.size();i++) {
+      Zarovka in =  (Zarovka)zarovky.get(i);
+      in.dim = chapter6[(int)((i+(frameCount/25.0))%chapter6.length)];
+    }
+    
+    if(enter.state && timer>50){
+      
+      timer = 0;
+      hlas.mluv("7.txt");
+      delay(15000);
+      mode = 7;
+    }
+    
+    break;
+    
+    case 7:
+    
     
     for (int i =0 ; i < zarovky.size();i++) {
       Zarovka in =  (Zarovka)zarovky.get(i);
-      in.dim = chapter6[i];
+      in.dim = chapter6[(int)((i+(frameCount/18.0))%chapter6.length)];
     }
     
     if(enter.state && timer>50){
       timer = -5000;
-      morse.zprava();
-      morse.zprava();
-      morse.zprava();
-      morse.zprava();
+     
       
       delay(5000);
       
       hlas.mluv("fin.txt");
+      
+      delay(50000);
       
     }
       

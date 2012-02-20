@@ -1,5 +1,6 @@
 class Hlas{
   String command = "espeak -v cs -s 30 -f ";
+  String rek = "espeak -v cs -s 30 ";
   String [] kecy;
   String filename = "1.txt";
   
@@ -23,6 +24,16 @@ class Hlas{
     }catch(Exception e){
       
     }
+    
+  }
+  
+  void rekni(String _in){
+    try{  
+      Runtime.getRuntime().exec(rek+" "+_in);    
+    }catch(Exception e){
+      
+    }
+    
     
   }
   
